@@ -1,18 +1,18 @@
-# Membuat shortcut "Chat" di Desktop dengan ikon chat.ico:
-#   1. Chat.lnk          -> membuka aplikasi Claude desktop
-#   2. Chat (Web).lnk    -> membuka claude.ai di Edge mode aplikasi (tanpa address bar & tab)
-#   3. Chat helper.lnk   -> menjalankan mask.ahk otomatis saat Windows menyala (folder Startup)
+# Membuat shortcut "Settings" di Desktop dengan ikon settings.ico:
+#   1. Settings.lnk        -> membuka aplikasi Claude desktop
+#   2. Settings (Web).lnk    -> membuka claude.ai di Edge mode aplikasi (tanpa address bar & tab)
+#   3. Settings helper.lnk   -> menjalankan mask.ahk otomatis saat Windows menyala (folder Startup)
 #
 # Cara pakai: klik kanan file ini > "Run with PowerShell".
 
 $ErrorActionPreference = 'Stop'
 $here = Split-Path -Parent $MyInvocation.MyCommand.Path
-$icon = Join-Path $here 'chat.ico'
+$icon = Join-Path $here 'settings.ico'
 $desktop = [Environment]::GetFolderPath('Desktop')
 $startup = [Environment]::GetFolderPath('Startup')
 $shell = New-Object -ComObject WScript.Shell
 
-if (-not (Test-Path $icon)) { throw "chat.ico tidak ditemukan di $here" }
+if (-not (Test-Path $icon)) { throw "settings.ico tidak ditemukan di $here" }
 
 function New-Shortcut($path, $target, $arguments, $workdir) {
     $lnk = $shell.CreateShortcut($path)
@@ -32,7 +32,7 @@ $candidates = @(
 )
 $claude = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 if ($claude) {
-    New-Shortcut (Join-Path $desktop 'Chat.lnk') $claude $null (Split-Path $claude)
+    New-Shortcut (Join-Path $desktop 'Settings.lnk') $claude $null (Split-Path $claude)
 } else {
     Write-Warning "claude.exe tidak ditemukan otomatis. Lewati shortcut aplikasi desktop."
 }
@@ -43,14 +43,14 @@ $edge = @(
     "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe"
 ) | Where-Object { Test-Path $_ } | Select-Object -First 1
 if ($edge) {
-    New-Shortcut (Join-Path $desktop 'Chat (Web).lnk') $edge '--app=https://claude.ai' $null
+    New-Shortcut (Join-Path $desktop 'Settings (Web).lnk') $edge '--app=https://claude.ai' $null
 }
 
 # 3. Jalankan mask.ahk saat Windows menyala
 $ahk = Join-Path $here 'mask.ahk'
 if (Test-Path $ahk) {
-    New-Shortcut (Join-Path $startup 'Chat helper.lnk') $ahk $null $here
+    New-Shortcut (Join-Path $startup 'Settings helper.lnk') $ahk $null $here
 }
 
 Write-Host ""
-Write-Host "Selesai. Unpin ikon Claude lama dari taskbar, lalu pin shortcut 'Chat' yang baru."
+Write-Host "Selesai. Unpin ikon Claude lama dari taskbar, lalu pin shortcut 'Settings' yang baru."
