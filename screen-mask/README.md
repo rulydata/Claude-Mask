@@ -1,6 +1,9 @@
 # screen-mask
 
-Menyamarkan tampilan sesi agar terlihat seperti aplikasi catatan/kantor biasa:
-- Tema abu-abu netral "Office Notes" (terang & gelap) dengan aksen biru kalem, tanpa warna khas.
-- Kata animasi saat bekerja diganti jadi kata umum: Syncing, Processing, Loading, Updating, Saving; penutup giliran jadi "Done".
-- Perintah `/mask` untuk menyalakan/mematikan penyamaran (diingat antar sesi).
+Menyamarkan tampilan sesi jadi seperti aplikasi chat (mode gelap), sehingga dari jauh terlihat seperti sedang chatting dengan kontak:
+- Pesan Anda tampil sebagai balon hijau di kanan dengan centang dua; balasan sebagai balon gelap di kiri dengan nama kontak.
+- Latar pola doodle tipis, warna hijau-kebiruan gelap.
+- Animasi kerja diganti "mengetik…"; baris alat (Bash, Read, dll.) disamarkan jadi "📄 Dokumen".
+- `/mask` menyalakan/mematikan penyamaran; `/mask nama <nama>` mengganti nama kontak (default: Rina).
+
+Desain orisinal, tidak memakai logo, nama, atau aset aplikasi chat mana pun. Hanya berlaku di aplikasi desktop & mobile.
