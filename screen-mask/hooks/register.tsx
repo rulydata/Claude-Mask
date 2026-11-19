@@ -1,3 +1,4 @@
+import { atom, read, update } from 'claude-code'
 import type { Register, ThemeSetArgs } from 'claude-code'
 
 import { makeColors } from './make-colors.js'
@@ -64,6 +65,10 @@ async function contactName($: Store) {
   return typeof name === 'string' && name !== '' ? name : 'Rina'
 }
 
+// Tirai: isi percakapan disembunyikan sementara (tidak dihapus).
+const curtain = atom({ plugin: 'screen-mask', key: 'isCurtain' } as const, false)
+const HIDDEN_TEXT = '• • • • • •'
+
 const DRAWS = (surface: string) => surface === 'desktop' || surface === 'mobile'
 
 export const register: Register = on => {
@@ -71,6 +76,10 @@ export const register: Register = on => {
     await $.command.register({
       name: 'mask',
       description: 'Penyamaran: /mask (on/off), /mask nama <nama kontak>',
+    })
+    await $.command.register({
+      name: 'tirai',
+      description: 'Sembunyikan / tampilkan lagi isi percakapan',
     })
     if (await isMasked($)) {
       const unpainted = problems.find(line => line.startsWith("Desktop won't paint"))
@@ -100,6 +109,29 @@ export const register: Register = on => {
     return { text: 'Mask: OFF' }
   })
 
+  on('command.run', { command: 'tirai' }, async $ => {
+    const now = await update($, curtain, isOn => !isOn)
+    return { text: now ? 'Tirai: ditutup' : 'Tirai: dibuka' }
+  })
+
+  // Tombol tirai di atas kotak ketik.
+  on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
+    if (e.props.hasSurvey) {
+      return next(e)
+    }
+    const { Box, Button } = $.ui.resolve(e)
+    const isOn = await read($, curtain)
+    return (
+      <Box>
+        <Button
+          key="tirai"
+          label={isOn ? 'Buka tirai' : 'Tutup tirai'}
+          onPress={() => update($, curtain, value => !value)}
+        />
+      </Box>
+    )
+  })
+
   on('ui.render', { component: 'Backdrop' }, async ($, e, next) => {
     if ((e.surface !== 'desktop' && e.surface !== 'mobile') || !(await isMasked($))) {
       return next(e)
@@ -114,10 +146,11 @@ export const register: Register = on => {
       return next(e)
     }
     const { Box, Text } = $.ui.resolve(e)
+    const isCovered = await read($, curtain)
     return (
       <Box flexDirection="row" justifyContent="flex-end">
         <Box flexDirection="column" alignItems="flex-end" backgroundColor={OUT_BUBBLE} paddingX="md" paddingY="sm">
-          <Text>{e.props.text}</Text>
+          <Text>{isCovered ? HIDDEN_TEXT : e.props.text}</Text>
           <Text size="caption" color={TICK_COLOR}>✓✓</Text>
         </Box>
       </Box>
@@ -131,13 +164,14 @@ export const register: Register = on => {
     }
     const { Box, Text } = $.ui.resolve(e)
     const name = await contactName($)
+    const isCovered = await read($, curtain)
     return (
       <Box flexDirection="row" justifyContent="flex-start">
         <Box flexDirection="column" backgroundColor={IN_BUBBLE} paddingX="md" paddingY="sm">
           {e.props.isFirstOfReply && (
             <Text size="footnote" weight="semibold" color={NAME_COLOR}>{name}</Text>
           )}
-          {await next(e)}
+          {isCovered ? <Text>{HIDDEN_TEXT}</Text> : await next(e)}
         </Box>
       </Box>
     )

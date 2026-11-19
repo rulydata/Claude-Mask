@@ -10,7 +10,7 @@ Isi folder ini (simpan ketiganya dalam **satu folder** yang sama, misalnya `Docu
 
 ## Langkah
 
-1. Instal **AutoHotkey v2** dari autohotkey.com.
+1. Instal **AutoHotkey v2 (atau mask.ps1 tanpa install)** dari autohotkey.com.
 2. Klik dua kali `mask.ahk`. Ikon roda gigi muncul di system tray.
 3. Klik kanan `buat-shortcut.ps1` > **Run with PowerShell**.
    Kalau diblokir, buka PowerShell di folder itu lalu jalankan:

@@ -1,1 +1,6 @@
-{ "name": "screen-mask", "version": "0.1.0", "description": "Menyamarkan tampilan Claude jadi seperti aplikasi catatan/kantor biasa yang netral" }
+{
+  "name": "screen-mask",
+  "version": "0.3.0",
+  "description": "Menyamarkan tampilan Claude jadi seperti aplikasi catatan/kantor biasa yang netral",
+  "types": "./types/index.d.ts"
+}
