@@ -1,7 +1,7 @@
 # Membuat shortcut "Settings" di Desktop dengan ikon settings.ico:
 #   1. Settings.lnk        -> membuka aplikasi Claude desktop
 #   2. Settings (Web).lnk    -> membuka claude.ai di Edge mode aplikasi (tanpa address bar & tab)
-#   3. Settings helper.lnk   -> menjalankan mask.ahk otomatis saat Windows menyala (folder Startup)
+#   3. Settings helper.lnk   -> menjalankan mask.ps1 otomatis saat Windows menyala (folder Startup)
 #
 # Cara pakai: klik kanan file ini > "Run with PowerShell".
 
@@ -46,10 +46,13 @@ if ($edge) {
     New-Shortcut (Join-Path $desktop 'Settings (Web).lnk') $edge '--app=https://claude.ai' $null
 }
 
-# 3. Jalankan mask.ahk saat Windows menyala
-$ahk = Join-Path $here 'mask.ahk'
-if (Test-Path $ahk) {
-    New-Shortcut (Join-Path $startup 'Settings helper.lnk') $ahk $null $here
+# 3. Jalankan mask.ps1 (tanpa jendela) saat Windows menyala
+$mask = Join-Path $here 'mask.ps1'
+$ps = "$env:SystemRoot\System32\WindowsPowerShell\v1.0\powershell.exe"
+if (Test-Path $mask) {
+    New-Shortcut (Join-Path $startup 'Settings helper.lnk') $ps "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$mask`"" $here
+    Start-Process $ps -ArgumentList "-WindowStyle Hidden -ExecutionPolicy Bypass -File `"$mask`"" -WorkingDirectory $here
+    Write-Host "Helper dijalankan sekarang (tanpa jendela)."
 }
 
 Write-Host ""
